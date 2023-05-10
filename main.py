@@ -52,9 +52,9 @@ mapping_file = "/content/drive/MyDrive/data/"+args.dataset+"/mapping.txt"
 # Use time data to distinguish output folders in different training
 # time_data = '2020-10-15_08-52-26' # turn on this line in evaluation
 time_data = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
-bz_stages = '/margin_map_both' + time_data
-model_dir = "./models/"+args.dataset + bz_stages + "_split_"+args.split
-results_dir = "./results/"+args.dataset + bz_stages + "_split_"+args.split
+bz_stages = 'margin_map_both' + time_data
+model_dir = "/content/drive/MyDrive/models/"+args.dataset + bz_stages + "_split_"+args.split
+results_dir = "/content/drive/MyDrive/results/"+args.dataset + bz_stages + "_split_"+args.split
  
 if not os.path.exists(model_dir):
     os.makedirs(model_dir)

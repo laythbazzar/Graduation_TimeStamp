@@ -16,8 +16,10 @@ class BatchGenerator:
         self.gt = {}
         self.confidence_mask = {}
 
+        dataset = gt_path.split('/')[5]
         # Load annotations
-        annotation_file_path = "/content/TimestampActionSeg/data/gtea_annotation_all.npy"
+        annotation_file_path = "/content/drive/MyDrive/data/" +dataset + "_annotation_all.npy"
+        
         self.random_index = np.load(annotation_file_path, allow_pickle=True).item()
 
     def reset(self):

@@ -91,8 +91,8 @@ def f_score(recognized, ground_truth, overlap, bg_class=["background"]):
 def evaluate(dataset, split, time_data):
     print("Evaluate dataset {} in split {} for single stamp supervision".format(dataset, split))
 
-    bz_stages = '/margin_map_both' + time_data
-    recog_path = "/content/results/" + dataset + bz_stages + "_split_" + split + '/'
+    bz_stages = 'margin_map_both' + time_data
+    recog_path = "/content/drive/MyDrive/results/" + dataset + bz_stages + "_split_" + split + '/'
     ground_truth_path = "/content/drive/MyDrive/data/" + dataset+"/groundTruth/"
     file_list = "/content/drive/MyDrive/data/" + dataset + "/splits/test.split" + split + ".bundle"
 
@@ -101,7 +101,7 @@ def evaluate(dataset, split, time_data):
     overlap = [.1, .25, .5]
     tp, fp, fn = np.zeros(3), np.zeros(3), np.zeros(3)
 
-    file_name = '/content/TimestampActionSeg/result/' + time_data + '.xlsx'
+    file_name = '/content/Graduation_TimeStamp/result' + time_data + '.xlsx'
     workbook = xlsxwriter.Workbook(file_name)
     worksheet = workbook.add_worksheet()
     metrics = ['F1@10', 'F1@25', 'F1@50', 'Edit', 'Acc']
