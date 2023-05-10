@@ -1,4 +1,3 @@
-#!/usr/bin/python3.6
 
 import torch
 from torch.utils.tensorboard import SummaryWriter
@@ -34,7 +33,7 @@ num_f_maps = 64
 features_dim = 2048
 bz = 8
 lr = 0.0005
-num_epochs = 50
+num_epochs = 30
 
 # use the full temporal resolution @ 15fps
 sample_rate = 1
@@ -43,12 +42,12 @@ sample_rate = 1
 if args.dataset == "50salads":
     sample_rate = 2
 
-vid_list_file = "./data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
-vid_list_file_tst = "./data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
-features_path = "./data/"+args.dataset+"/features/"
-gt_path = "./data/"+args.dataset+"/groundTruth/"
+vid_list_file = "/content/drive/MyDrive/data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
+vid_list_file_tst = "/content/drive/MyDrive/data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
+features_path = "/content/drive/MyDrive/data/"+args.dataset+"/features/"
+gt_path = "/content/drive/MyDrive/data/"+args.dataset+"/groundTruth/"
 
-mapping_file = "./data/"+args.dataset+"/mapping.txt"
+mapping_file = "/content/drive/MyDrive/data/"+args.dataset+"/mapping.txt"
 
 # Use time data to distinguish output folders in different training
 # time_data = '2020-10-15_08-52-26' # turn on this line in evaluation

@@ -1,24 +1,24 @@
-#!/usr/bin/python3.6
 
 import torch
 import numpy as np
 import random
 
 
-class BatchGenerator(object):
+class BatchGenerator:
     def __init__(self, num_classes, actions_dict, gt_path, features_path, sample_rate):
-        self.list_of_examples = list()
-        self.index = 0
         self.num_classes = num_classes
         self.actions_dict = actions_dict
         self.gt_path = gt_path
         self.features_path = features_path
         self.sample_rate = sample_rate
+        self.list_of_examples = []
+        self.index = 0
         self.gt = {}
         self.confidence_mask = {}
 
-        dataset_name = gt_path.split('/')[2]
-        self.random_index = np.load(gt_path + dataset_name + "_annotation_all.npy", allow_pickle=True).item()
+        # Load annotations
+        annotation_file_path = "/content/TimestampActionSeg/data/gtea_annotation_all.npy"
+        self.random_index = np.load(annotation_file_path, allow_pickle=True).item()
 
     def reset(self):
         self.index = 0

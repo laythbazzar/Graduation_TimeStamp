@@ -1,5 +1,3 @@
-#!/usr/bin/python3.6
-# adapted from: https://github.com/colincsl/TemporalConvolutionalNetworks/blob/master/code/metrics.py
 
 import numpy as np
 import xlsxwriter
@@ -94,16 +92,16 @@ def evaluate(dataset, split, time_data):
     print("Evaluate dataset {} in split {} for single stamp supervision".format(dataset, split))
 
     bz_stages = '/margin_map_both' + time_data
-    recog_path = "./results/" + dataset + bz_stages + "_split_" + split + '/'
-    ground_truth_path = "./data/" + dataset+"/groundTruth/"
-    file_list = "./data/" + dataset + "/splits/test.split" + split + ".bundle"
+    recog_path = "/content/results/" + dataset + bz_stages + "_split_" + split + '/'
+    ground_truth_path = "/content/drive/MyDrive/data/" + dataset+"/groundTruth/"
+    file_list = "/content/drive/MyDrive/data/" + dataset + "/splits/test.split" + split + ".bundle"
 
     list_of_videos = read_file(file_list).split('\n')[:-1]
 
     overlap = [.1, .25, .5]
     tp, fp, fn = np.zeros(3), np.zeros(3), np.zeros(3)
 
-    file_name = './result/' + time_data + '.xlsx'
+    file_name = '/content/TimestampActionSeg/result/' + time_data + '.xlsx'
     workbook = xlsxwriter.Workbook(file_name)
     worksheet = workbook.add_worksheet()
     metrics = ['F1@10', 'F1@25', 'F1@50', 'Edit', 'Acc']
@@ -141,7 +139,11 @@ def evaluate(dataset, split, time_data):
             fn[s] += fn1
 
     for s in range(len(overlap)):
-        precision = tp[s] / float(tp[s]+fp[s])
+        if tp[s]+fp[s] == 0:
+           precision = 0
+        else:
+            precision = tp[s] / float(tp[s]+fp[s])
+
         recall = tp[s] / float(tp[s]+fn[s])
     
         f1 = 2.0 * (precision*recall) / (precision+recall)
