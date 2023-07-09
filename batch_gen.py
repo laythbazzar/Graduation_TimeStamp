@@ -1,4 +1,3 @@
-
 import torch
 import numpy as np
 import random
@@ -18,8 +17,8 @@ class BatchGenerator:
 
         dataset = gt_path.split('/')[5]
         # Load annotations
-        annotation_file_path = "/content/drive/MyDrive/data/" +dataset + "_annotation_all.npy"
-        
+        annotation_file_path = "/content/drive/MyDrive/data/" + dataset + "_annotation_all.npy"
+
         self.random_index = np.load(annotation_file_path, allow_pickle=True).item()
 
     def reset(self):
@@ -74,8 +73,9 @@ class BatchGenerator:
             batch_confidence.append(self.confidence_mask[vid])
 
         length_of_sequences = list(map(len, batch_target))
-        batch_input_tensor = torch.zeros(len(batch_input), np.shape(batch_input[0])[0], max(length_of_sequences), dtype=torch.float)
-        batch_target_tensor = torch.ones(len(batch_input), max(length_of_sequences), dtype=torch.long)*(-100)
+        batch_input_tensor = torch.zeros(len(batch_input), np.shape(batch_input[0])[0], max(length_of_sequences),
+                                         dtype=torch.float)
+        batch_target_tensor = torch.ones(len(batch_input), max(length_of_sequences), dtype=torch.long) * (-100)
         mask = torch.zeros(len(batch_input), self.num_classes, max(length_of_sequences), dtype=torch.float)
         for i in range(len(batch_input)):
             batch_input_tensor[i, :, :np.shape(batch_input[i])[1]] = torch.from_numpy(batch_input[i])
@@ -103,6 +103,9 @@ class BatchGenerator:
         batch = self.list_of_examples[self.index - batch_size:self.index]
         num_video, _, max_frames = pred.size()
         boundary_target_tensor = torch.ones(num_video, max_frames, dtype=torch.long) * (-100)
+        tp = 0
+        fp = 0
+        fn = 0
 
         for b, vid in enumerate(batch):
             single_idx = self.random_index[vid]
@@ -126,7 +129,7 @@ class BatchGenerator:
                     diff_right = features[:, t:end] - center_right.reshape(-1, 1)
                     score_right = torch.mean(torch.norm(diff_right, dim=0))
 
-                    left_score[t-start-1] = ((t-start) * score_left + (end - t) * score_right)/(end - start)
+                    left_score[t - start - 1] = ((t - start) * score_left + (end - t) * score_right) / (end - start)
 
                 cur_bound = torch.argmin(left_score) + start + 1
                 left_bound.append(cur_bound.item())
@@ -146,7 +149,7 @@ class BatchGenerator:
                     diff_right = features[:, t:end] - center_right.reshape(-1, 1)
                     score_right = torch.mean(torch.norm(diff_right, dim=0))
 
-                    right_score[t-start-1] = ((t-start) * score_left + (end - t) * score_right)/(end - start)
+                    right_score[t - start - 1] = ((t - start) * score_left + (end - t) * score_right) / (end - start)
 
                 cur_bound = torch.argmin(right_score) + start + 1
                 right_bound.append(cur_bound.item())
@@ -158,11 +161,20 @@ class BatchGenerator:
             for i in range(num_bound):
                 temp_left = left_bound[i]
                 temp_right = right_bound[num_bound - i - 1]
-                middle_bound = int((temp_left + temp_right)/2)
+                middle_bound = int((temp_left + temp_right) / 2)
                 boundary_target[single_idx[i]:middle_bound] = vid_gt[single_idx[i]]
                 boundary_target[middle_bound:single_idx[i + 1] + 1] = vid_gt[single_idx[i + 1]]
 
             boundary_target[single_idx[-1]:] = vid_gt[single_idx[-1]]  # frames after last single frame has same label
             boundary_target_tensor[b, :vid_gt.shape[0]] = torch.from_numpy(boundary_target)
 
-        return boundary_target_tensor
+            for frame in range(0, len(vid_gt)):
+                if boundary_target[frame] == -100:
+                    fn += 1
+                else:
+                    if int(boundary_target[frame]) == int(vid_gt[frame]):
+                        tp += 1
+                    else:
+                        fp += 1
+
+        return boundary_target_tensor, tp, fp, fn
